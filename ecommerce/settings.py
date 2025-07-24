@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta # Import timedelta for JWT settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# CRITICAL: For production, load this from an environment variable!
 SECRET_KEY = "django-insecure-!u375f0$gh^jzj=!lg&opo+zg@4=(*r!%$d*80+8lu!wf0#8=l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] # In production, list your domain names here, e.g., ['yourdomain.com']
 
 
 # Application definition
@@ -41,12 +43,12 @@ INSTALLED_APPS = [
     'store',
     "corsheaders",
     'rest_framework_simplejwt',
-    'users',
+    'users', # Your users app where CustomUser is defined
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "corsheaders.middleware.CorsMiddleware", # Move this up here
+    "corsheaders.middleware.CorsMiddleware", # Placed high up to handle CORS early
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -54,21 +56,64 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS configuration
+CORS_ALLOW_ALL_ORIGINS = True # Change to CORS_ALLOWED_ORIGINS in production for security
+# CORS_ALLOWED_ORIGINS = [ # Example for production
+#     "http://localhost:3000",
+#     "https://yourfrontend.com",
+# ]
 
 
-# ecommerce/settings.py
+# Django REST Framework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # You might also want to add default permission classes for global security
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticated',
-    # )
+    # RECOMMENDED: Make all API views require authentication by default
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
 }
-ROOT_URLCONF = "ecommerce.urls"
 
+# Custom User Model
+AUTH_USER_MODEL = 'users.CustomUser' # Points to your custom user model
+
+# JWT Settings (djangorestframework-simplejwt)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # Access tokens are valid for 60 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),   # Refresh tokens are valid for 7 days
+    'ROTATE_REFRESH_TOKENS': True, # Good security practice
+    'BLACKLIST_AFTER_ROTATION': True, # Blacklist old refresh tokens after rotation
+    'UPDATE_LAST_LOGIN': False, # Set to True if you want to update last login timestamp
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY, # Uses your Django SECRET_KEY
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    'JWK_URL': None,
+    'LEEWAY': 0,
+
+    'AUTH_HEADER_TYPES': ('Bearer',), # Expected header format: Authorization: Bearer <token>
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+
+ROOT_URLCONF = "ecommerce.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
