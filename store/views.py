@@ -1,14 +1,26 @@
-from rest_framework import generics
-from .models import Product
-from .serializers import ProductSerializer
+# store/views.py
+from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView # Not strictly needed if only using generics views in this file
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+import uuid # Assuming you use this for ID generation somewhere if not custom in serializer
 
-class ProductListCreate(generics.ListCreateAPIView):
+from .models import Product # Assuming you also have Order and Payment if implementing payments
+from .serializers import ProductSerializer # Also PaymentSerializer and OrderSerializer if needed
+
+class ProductListCreate(generics.ListCreateAPIView): # Ensure only one class definition
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    def get_permissions(self):
+        # This method correctly handles different permissions for different HTTP methods
+        if self.request.method == 'GET':
+            return [AllowAny()] # Publicly accessible for listing
+        # For POST (create), PUT (update), DELETE, require authenticated admin
+        return [IsAuthenticated(), IsAdminUser()]
+
     def create(self, request, *args, **kwargs):
+        # Your custom create method with manual validation
         required_fields = [
             "id", "category", "item", "brand", "quantity_unit",
             "price_inr", "currency", "image_url", "stock_quantity"
@@ -35,3 +47,5 @@ class ProductListCreate(generics.ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response({"message": "Product added successfully!", "product": serializer.data}, status=status.HTTP_201_CREATED)
+
+# ... (Any other views like ProcessDummyPayment, CreateOrderView should be defined below this single ProductListCreate)
