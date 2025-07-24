@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zepto Product Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Zepto Product Admin Panel</h1>
+
+        <div class="form-section">
+            <h2>Add New Product</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select id="category" required>
+                        <option value="">-- Select a Category --</option>
+                        <option value="Vegetables & Fruits">Vegetables & Fruits</option>
+                        <option value="Dairy & Breakfast">Dairy & Breakfast</option>
+                        <option value="Staples, Grains & Flours">Staples, Grains & Flours</option>
+                        <option value="Snacks & Branded Foods">Snacks & Branded Foods</option>
+                        <option value="Beverages">Beverages</option>
+                        <option value="Breads & Bakery">Breads & Bakery</option>
+                        <option value="Meats, Seafood & Eggs">Meats, Seafood & Eggs</option>
+                        <option value="Frozen Food">Frozen Food</option>
+                        <option value="Personal Care">Personal Care</option>
+                        <option value="Cleaning & Household">Cleaning & Household</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Item Name:</label>
+                    <input type="text" id="itemName" placeholder="e.g., Potato, Amul Milk" required>
+                </div>
+                <div class="form-group">
+                    <label for="brand">Brand:</label>
+                    <input type="text" id="brand" placeholder="e.g., Local Farm, Amul" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantityUnit">Quantity Unit:</label>
+                    <input type="text" id="quantityUnit" placeholder="e.g., 1 kg, 500ml, 6 pcs" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price (INR):</label>
+                    <input type="number" id="price" step="0.01" placeholder="e.g., 30.00, 66.00" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="currency">Currency:</label>
+                    <input type="text" id="currency" value="INR" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl">Image URL:</label>
+                    <input type="url" id="imageUrl" placeholder="e.g., https://example.com/potato.jpg" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description (Optional):</label>
+                    <textarea id="description" rows="3" placeholder="Detailed product description, good for chatbot."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes (Optional):</label>
+                    <textarea id="notes" rows="2" placeholder="Any additional short notes."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="stockQuantity">Stock Quantity:</label>
+                    <input type="number" id="stockQuantity" placeholder="e.g., 150" required min="0">
+                </div>
+                <button type="submit">Add Product</button>
+            </form>
+        </div>
+
+        <div class="data-section">
+            <h2>Product List (Admin View)</h2>
+            <table id="productListTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Item</th>
+                        <th>Brand</th>
+                        <th>Qty/Unit</th>
+                        <th>Price (INR)</th>
+                        <th>Currency</th>
+                        <th>Image URL</th>
+                        <th>Description</th>
+                        <th>Notes</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="product-catalog-section">
+            <h2>Product Catalog (User View)</h2>
+            <div id="productCardsContainer" class="product-grid">
+                </div>
+        </div>
+
+        <div class="json-section">
+            <h2>Generated JSON Output (for Reference)</h2>
+            <pre id="jsonOutput"></pre>
+            <button id="copyJson">Copy JSON</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
